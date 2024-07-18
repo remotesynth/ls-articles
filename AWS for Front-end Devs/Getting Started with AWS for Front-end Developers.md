@@ -8,7 +8,7 @@ Whether you choose to continue using these tools (don't get me wrong, I'm a big 
 
 ### The Example Application
 
-Before we get started, let's talk about the examples in this tutorial. The full example reponsitory can be found [on GitHub](https://github.com/remotesynth/aws-for-frontend-devs).
+Before we get started, let's talk about the examples in this tutorial. The full example repository can be found [on GitHub](https://github.com/remotesynth/aws-for-frontend-devs).
 
 Each step in this tutorial series builds upon the previous. While the application we will deploy is intentionally simple, ultimately we start from a simple static site and end up with a page that calls a backend API that returns data from a data store.
 
@@ -62,9 +62,9 @@ AWS [global infrastructure](https://aws.amazon.com/about-aws/global-infrastructu
 
 ![AWS region map](aws-regions.png)
 
-Each of these regions have 3 or more _availability zones_ (AZ). These are separate data centers within the region that make the zones resiliant. If, for example, one AZ goes down, another can take over and since, in most cases,  your services are replicated across the AZs. This means that your services will continue to function even in the case of a significant incident that impacts a single data center. That doesn't mean that AWS doesn't have outages, but they are very rare.
+Each of these regions have 3 or more _availability zones_ (AZ). These are separate data centers within the region that make the zones resilient. If, for example, one AZ goes down, another can take over and since, in most cases,  your services are replicated across the AZs. This means that your services will continue to function even in the case of a significant incident that impacts a single data center. That doesn't mean that AWS doesn't have outages, but they are very rare.
 
-You will choose a region whenever you are deploying services. In most cases, you'll want to deploy all the various AWS services that make up your web application to the same region. You do not need to choose availability zones, though a few services may allow you to choose a cheaper option that isn't replicated acess AZs for data that isn't critical. In all the cases within this guide, we'll be using the standard version of each service.
+You will choose a region whenever you are deploying services. In most cases, you'll want to deploy all the various AWS services that make up your web application to the same region. You do not need to choose availability zones, though a few services may allow you to choose a cheaper option that isn't replicated access AZs for data that isn't critical. In all the cases within this guide, we'll be using the standard version of each service.
 
 ### AWS Security Basics
 
@@ -312,7 +312,7 @@ You should receive a similar output result containing the URL to access the stat
 
 #### Finishing Up
 
-Congrats, you now have a globally cached static web site runing on a combination of S3 and CloudFront. However, before we move on, we have to discuss cache invalidation.
+Congrats, you now have a globally cached static web site running on a combination of S3 and CloudFront. However, before we move on, we have to discuss cache invalidation.
 
 > There are 2 hard problems in computer science: cache invalidation, naming things, and off-by-1 errors.
 > - Leon Bambrick
@@ -348,7 +348,7 @@ The broad benefit of Lambdas is twofold: you only pay for what you use; and Lamb
 
 #### Key Benefits for Front-end Devs
 
-Lambas are the basis for the backend of many modern web applications. Rather than run on a monolithic web application server (ex. PHP, Ruby), many web applications use a microservices architecture that rely on a number of Lambdas to perform the backend processing necessary for the web site to function.
+Lambdas are the basis for the backend of many modern web applications. Rather than run on a monolithic web application server (ex. PHP, Ruby), many web applications use a microservices architecture that rely on a number of Lambdas to perform the backend processing necessary for the web site to function.
 
 In fact, many full-stack frameworks like Next.js, for example, rely on serverless functions (in many cases AWS Lambda) to perform everything from backend processing to server-side rendering. Even if you ultimately end up relying on a full-stack framework to deploy all your backend to Lambdas for you, it's good to understand how they function.
 
@@ -358,7 +358,7 @@ Lambda pricing can be a little complicated since it relies on a combination of t
 
 ### Adding a Lambda Function to Our Deployment
 
-Let's imagine we wanted to make a simple Lambda function that we can call from your web application to perform some kind of backend processing. For example, maybe it's just a simple email signup for for your newsletter.
+Let's imagine we wanted to make a simple Lambda function that we can call from your web application to perform some kind of backend processing. For example, maybe it's just a simple email sign-up for for your newsletter.
 
 First, we need the function itself. Lambda functions invoke a handler when called. Here is a very generic handler that just returns a response body.
 
@@ -480,7 +480,7 @@ What API Gateway does may not sound sexy but it is absolutely necessary when bui
 
 #### Pricing
 
-API Gateway does not have a permanent free tier but does offer a free 12 month free tier for new AWS customers that includes 1 million API calls received for REST APIs and HTTP APIs, and 1 million messages and 750,000 connection minutes for WebSocket APIs. If you aren't elegible for the free tier pricing, the costs for HTTP APIs, REST APIs and WebSockets APIs are charged by per million requests and the cost per million decrease as usage increases. 
+API Gateway does not have a permanent free tier but does offer a free 12 month free tier for new AWS customers that includes 1 million API calls received for REST APIs and HTTP APIs, and 1 million messages and 750,000 connection minutes for WebSocket APIs. If you aren't eligible for the free tier pricing, the costs for HTTP APIs, REST APIs and WebSockets APIs are charged by per million requests and the cost per million decrease as usage increases. 
 
 While we'll be building a REST API here, you can build a full backend using the HTTP API option, even connecting to Lambdas, but there are certain limitations. [This guide](https://www.netlify.com/blog/why-netlify-selected-astro-for-its-developer-hub-and-marketing-site/) is useful for determing which type of API you might need. Caching can also incur additional costs.
 
@@ -623,7 +623,7 @@ The free tier includes:
 
 #### Adding Data to Our Web Application
 
-We're going to add a DyanmoDB table and populate it with some data (just a single row for the purposes of example). Then we are going to use Lambda to retrieve the data and return it back to our web application, via API Gateway, of course. We could have [integrated DyanmoDB directly with API Gateway](https://aws.amazon.com/blogs/compute/using-amazon-api-gateway-as-a-proxy-for-dynamodb/), but I assumed a more common usage would be to do something with the data in our backend before returning the result.
+We're going to add a DynamoDB table and populate it with some data (just a single row for the purposes of example). Then we are going to use Lambda to retrieve the data and return it back to our web application, via API Gateway, of course. We could have [integrated DynamoDB directly with API Gateway](https://aws.amazon.com/blogs/compute/using-amazon-api-gateway-as-a-proxy-for-dynamodb/), but I assumed a more common usage would be to do something with the data in our backend before returning the result.
 
 First, we need to update our Lambda to get data from DynamoDB. We are using the [AWS SDK for JavaScript](https://aws.amazon.com/sdk-for-javascript/) to connect with DynamoDB. The nice thing is that the latest release of this SDK is always pre-loaded in Lambda, so you do not need to install it (it's also pre-loaded into LocalStack too!).
 
@@ -664,7 +664,7 @@ export const handler = async (event) => {
 };
 ```
 
-Next, lets look at what changed in the CDK script. First, we create a DynamoDB table with a partition key named `id`. Every table needs a partition key, as it is the equivalent of a primary key in a traditional RDMS. We did not define a sort key, which, as the name implies, would define how the data in the table is sorted. The topic of choosing the right partition key and sort key is outside the scope of this tutorial, but I recommend [this article](https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/), which covers the topic in detail.
+Next, lets look at what changed in the CDK script. First, we create a DynamoDB table with a partition key named `id`. Every table needs a partition key, as it is the equivalent of a primary key in a traditional RDBMS. We did not define a sort key, which, as the name implies, would define how the data in the table is sorted. The topic of choosing the right partition key and sort key is outside the scope of this tutorial, but I recommend [this article](https://aws.amazon.com/blogs/database/choosing-the-right-dynamodb-partition-key/), which covers the topic in detail.
 
 The next section is a script that inserts table records into DynamoDB once created. We're just inserting a single record.
 
