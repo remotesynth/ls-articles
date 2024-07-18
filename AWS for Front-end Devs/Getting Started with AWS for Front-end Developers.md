@@ -1,4 +1,4 @@
-# Getting Started with AWS for Front-end Developers
+# Getting Started with AWS for Frontend Developers
 
 The first time I tried to start working with AWS, I felt a bit overwhelmed. It felt like there were thousands of services and even just navigating between them, nevermind learning how to use them, seemed like a daunting task. I admit that I stepped away and it took me a few years to truly come back.
 
@@ -96,7 +96,7 @@ S3 is short for Simple Storage Service. S3 can store any kind of file-based asse
 
 Objects within S3 can be versioned as well, meaning that S3 will keep multiple versions of the same object with the same key, but with different version numbers. This can be useful, but, for most web assets, isn't necessary and will increase the costs of using S3.
 
-#### Key Benefits for Front-end Devs
+#### Key Benefits for Frontend Devs
 
 As I mentioned, every web site is a collection of file-based assets, so what you need is an easy way to store them and make them easily and quickly accessible via the web, and S3 offers that. On top of that, it is protected against failure since S3 objects are replicated across at least three availability zones within the deployed region.
 
@@ -218,7 +218,7 @@ At this point, we've deployed some static web site assets to S3. However, they a
 
 This is why almost every modern deployment platform (ex. Netlify, Vercel, etc.) includes edge caching of static web assets. That's where CloudFront fits in. It is the CDN that provides the edge caching of your site's assets across over 600 nodes globally to ensure that every user is access data that is closest to their geographic location.
 
-#### Key Benefits for Front-end Devs
+#### Key Benefits for Frontend Devs
 
 This is all about improving the performance of your web application. A CloudFront distribution isn't technically necessary to run a web site, but since your site has a global audience and you want to ensure that they get the best experience, you will likely want to set one up.
 
@@ -346,7 +346,7 @@ AWS Lambda is synonymous with serverless computing as it was the first serverles
 
 The broad benefit of Lambdas is twofold: you only pay for what you use; and Lambdas can scale up or down depending on that usage (meaning your server won't go down because of too many requests). But this means that you need to be aware that [Lambdas have a lifecycle](https://docs.aws.amazon.com/lambda/latest/operatorguide/execution-environments.html) as they spin up and spin down. When a Lambda is initially invoked, it has a cold start that can cause some latency in the initial response. After a period of inactivity, the Lambda will terminate, meaning that anything stored in memory is lost and the next call will incur the cold start penalty.
 
-#### Key Benefits for Front-end Devs
+#### Key Benefits for Frontend Devs
 
 Lambdas are the basis for the backend of many modern web applications. Rather than run on a monolithic web application server (ex. PHP, Ruby), many web applications use a microservices architecture that rely on a number of Lambdas to perform the backend processing necessary for the web site to function.
 
@@ -474,7 +474,7 @@ For one or two simple functions, adding a function URL to your Lambda is probabl
 
 API Gateway is a service purpose-built for managing, monitoring and securing either RESTful APIs, HTTP APIs or even WebSockets APIs, for real-time, two-way communication. It's important to note that the endpoints of the API do not have to be just Lambdas. You can also manage access through API keys or [Amazon Cognito](https://aws.amazon.com/cognito/).
 
-#### Key Benefits for Front-end Devs
+#### Key Benefits for Frontend Devs
 
 What API Gateway does may not sound sexy but it is absolutely necessary when building a full web application. API Gateway let's you organize your application's backend in a way that makes sense, with descriptive endpoint names under your own domain. It can also be used to ensure that you have the proper security on your API endpoints, whether they are private or public (and to what degree).
 
@@ -603,7 +603,7 @@ Every web application needs data. While some applications need the relational co
 
 DynamoDB is a fully-managed serverless, NoSQL data store. It stores everything in key-value pairs, but the value is a blob, meaning it can be a full document of data (for example, a JSON data structure). The [document model](https://aws.amazon.com/nosql/document/) treats the value as a document whereby you can query and update individual values. It provides both read consistency (supporting both eventually consistent and strongly consistent options) and ACID transactions.
 
-#### Key Benefits for Front-end Devs
+#### Key Benefits for Frontend Devs
 
 NoSQL databases provide a fast and easy way to build the data backend of your site. DynamoDB offers many of the features of other key-value and document stores that make it easy to use for backend web application data and it obviously integrates nicely within the AWS ecosystem. It's worth pointing out that other solutions like MongoDB have support for additional data types and querying capabilities out-of-the-box, but DynamoDB is known for its performance and also comes with replication across availability zones within a region by default.
 
