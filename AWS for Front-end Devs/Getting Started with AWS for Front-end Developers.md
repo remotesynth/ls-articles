@@ -1,6 +1,6 @@
 # Getting Started with AWS for Frontend Developers
 
-The first time I tried to start working with AWS, I felt a bit overwhelmed. It felt like there were thousands of services and even just navigating between them, nevermind learning how to use them, seemed like a daunting task. I admit that I stepped away and it took me a few years to truly come back.
+The first time I tried to start working with AWS, I felt a bit overwhelmed. It felt like there were thousands of services and even just navigating between them, never mind learning how to use them, seemed like a daunting task. I admit that I stepped away and it took me a few years to truly come back.
 
 The interesting this is that, during those years, I used AWS services, just not directly. There's a whole cottage industry, especially in full stack web development, of tools and services that manage deploying cloud services for you. These are usually built on AWS but the actual services and deployment is abstracted away from you – just add a function in this folder and _poof_ an AWS Lambda is magically deployed for you.
 
@@ -8,7 +8,7 @@ Whether you choose to continue using these tools (don't get me wrong, I'm a big 
 
 ### The Example Application
 
-Before we get started, let's talk about the examples in this tutorial. The full example repository can be found [on GitHub](https://github.com/remotesynth/aws-for-frontend-devs).
+Before we get started, let's talk about the examples in this tutorial. The full example repository is available [on GitHub](https://github.com/remotesynth/aws-for-frontend-devs).
 
 Each step in this tutorial series builds upon the previous. While the application we will deploy is intentionally simple, ultimately we start from a simple static site and end up with a page that calls a backend API that returns data from a data store.
 
@@ -22,17 +22,17 @@ All of the services we'll use have a free usage tier on AWS. In some cases, this
 
 ### Deploying the Examples
 
-There are multiple options for creating services in AWS:
+Multiple options exist for creating services in AWS:
 
 * You can use the AWS console and step through the configuration. This is often a good way to get comfortable with a service and it's options.
 * You can use [CloudFormation](https://aws.amazon.com/cloudformation/), which is a YAML-based infrastructure-as-code tool for provisioning AWS resources. I find that it can be quite tricky to get right (and I've struggled with it myself in the past), but AI tools like Amazon Q or GitHub Copilot actually do a pretty great job of generating this for you nowadays.
-* The [AWS CDK (Cloud Development Kit) let's you build out your infrastructure programmatically in code using languages like TypeScript, JavaScript, Python, Java, C# and Go. It has a bit of a learning curve, but can really feel the most comfortable of the three options in my view, since you are using a language you are already comfortable with.
+* The [AWS CDK (Cloud Development Kit)](https://aws.amazon.com/cdk/) let's you build out your infrastructure programmatically in code using languages like TypeScript, JavaScript, Python, Java, C# and Go. It has a bit of a learning curve, but can really feel the most comfortable of the three options in my view, since you are using a language you are already comfortable with.
 
-All of the deployments in this tutorial are built using the CDK. It's worth understanding that, ultimately, the CDK generates a CloudFormation template for you. This means that the deployment details in your AWS dashboard will still be located under CloudFormation.
+All of the deployments in this tutorial use the CDK. It's worth understanding that, ultimately, the CDK generates a CloudFormation template for you. This means that the deployment details in your AWS dashboard are still located under CloudFormation.
 
 #### Deploying Locally
 
-All of the provided examples can be run locally using a tool called [LocalStack](https://localstack.cloud). LocalStack provides a free and open source AWS emulator that you can run locally within a Docker container. You can find the open source project on [GitHub](https://github.com/localstack/localstack).
+All of the provided examples can run locally using a tool called [LocalStack](https://localstack.cloud). LocalStack provides a free and open source AWS emulator that you can run locally within a Docker container. You can find the open source project on [GitHub](https://github.com/localstack/localstack).
 
 Running your AWS projects locally during development can make for much faster iteration as the deployment will take far less time and can reduce development costs by eliminating the need for testing environments running on AWS.
 
@@ -62,7 +62,7 @@ AWS [global infrastructure](https://aws.amazon.com/about-aws/global-infrastructu
 
 ![AWS region map](aws-regions.png)
 
-Each of these regions have 3 or more _availability zones_ (AZ). These are separate data centers within the region that make the zones resilient. If, for example, one AZ goes down, another can take over and since, in most cases,  your services are replicated across the AZs. This means that your services will continue to function even in the case of a significant incident that impacts a single data center. That doesn't mean that AWS doesn't have outages, but they are very rare.
+Each of these regions have 3 or more _availability zones_ (AZ). These are separate data centers within the region that make the zones resilient. If, for example, one AZ goes down, another can take over and since, in most cases,  your services replicate across the AZs. This means that your services will continue to function even in the case of a significant incident that impacts a single data center. That doesn't mean that AWS doesn't have outages, but they are very rare.
 
 You will choose a region whenever you are deploying services. In most cases, you'll want to deploy all the various AWS services that make up your web application to the same region. You do not need to choose availability zones, though a few services may allow you to choose a cheaper option that isn't replicated access AZs for data that isn't critical. In all the cases within this guide, we'll be using the standard version of each service.
 
@@ -78,9 +78,9 @@ IAM is made up of four key components:
 2. [User groups](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_groups.html) provide a means to assign permissions to multiple users. For example, all the developers on your team may have similar access rights and be in a developers group.
 3. [Roles](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles.html) are a bit more complex to explain, but play a large part in enabling access between services. A role, like a user, has specific permissions to access AWS services, but it is more like a temporary grant of rights to that access and does not have a password or access key like a user would. Any user, whether assigned to a person, application or service, can assume a role and thus be temporarily granted the access rights assigned to that role. Roles are typically how a service, like Lambda, for example, might be granted rights to read, write or delete from another service, like DynamoDB.
 
-You manage access through [policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html). Policies are typically written in JSON (though they can be created visually within the AWS console) define the specific granular access to every action that can be performed by or on a service. For example, there are about [70 actions defined for just Lambda](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html).
+You manage access through [policies](https://docs.aws.amazon.com/IAM/latest/UserGuide/access_policies.html). Policies are typically written in JSON (though they can be created visually within the AWS console) and define the specific granular access to every action that can be performed by or on a service. For example, there are about [70 actions defined for just Lambda](https://docs.aws.amazon.com/service-authorization/latest/reference/list_awslambda.html).
 
-Clearly there's a lot more than I can cover in one tutorial about IAM, but, as you'll see, each service we create will typically need to be granted access to another service. We'll be defining this within our CDK code. For instance, when we create a CloudFront distribution in front of our S3 bucket, it won't work properly until it has been granted read rights to that S3 bucket.
+Clearly there's a lot more than I can cover in one tutorial about IAM, but, as you'll see, each service we create will typically need to be granted access to another service. We'll be defining this within our CDK code. For instance, when we create a CloudFront distribution in front of our S3 bucket, it won't work properly until it has received read rights to that S3 bucket.
 
 For further reading, [this guide](https://dev.to/aws-builders/a-beginners-guide-to-aws-identity-and-access-management-iam-4j5c) by Sedat Salman is a really good, and easy to understand, overview that goes into a little bit more detail.
 
@@ -92,13 +92,13 @@ One of the great things about the web is that not much is needed to get started 
 
 At its core, a web site or even web application is essentially nothing more than a collection of files: HTML, CSS, JavaScript, images, etc. This means that the very least you'll need is a place to store and serve these files, and this is where S3 fits in.
 
-S3 is short for Simple Storage Service. S3 can store any kind of file-based asset, not just web site assets. Assets stored in S3 are called _objects_ and include both the file and any metadata about that file. Every object is given a _key_, which is its unique identifier. Finally, objects are placed in _buckets_, which are akin to folders in a file-system.
+S3 is short for Simple Storage Service. S3 can store any kind of file-based asset, not just web site assets. Assets stored in S3 are called _objects_ and include both the file and any metadata about that file. Every object has a _key_, which is its unique identifier. Finally, objects are placed in _buckets_, which are akin to folders in a file-system.
 
 Objects within S3 can be versioned as well, meaning that S3 will keep multiple versions of the same object with the same key, but with different version numbers. This can be useful, but, for most web assets, isn't necessary and will increase the costs of using S3.
 
 #### Key Benefits for Frontend Devs
 
-As I mentioned, every web site is a collection of file-based assets, so what you need is an easy way to store them and make them easily and quickly accessible via the web, and S3 offers that. On top of that, it is protected against failure since S3 objects are replicated across at least three availability zones within the deployed region.
+As I mentioned, every web site is a collection of file-based assets, so what you need is an easy way to store them and make them easily and quickly accessible via the web, and S3 offers that. On top of that, it is protected against failure since S3 objects replicate across at least three availability zones within the deployed region.
 
 Keep in mind that S3 isn't just for web assets and, thus, offers various types of storage depending on the size, frequency of retrieval and replication that you need. For the purposes of web hosting, you'll likely want to use S3 Standard storage type which is for fast retrieval of frequently accessed objects.
 
@@ -108,9 +108,9 @@ While there is no permanent free plan for S3, a free 12 month trial is available
 
 #### Creating an S3 Bucket for a Web Site
 
-There are multiple ways to handle pushing web assets to an S3 bucket. You can simply create an empty bucket and then upload objects individually or in bulk to it either via the web console, CLI, CDK or SDKs. Alternatively, you can create the bucket and upload the assets in the same operation as we'll do here (yes, you can update them afterwards if you want).
+Multiple ways exist to handle pushing web assets to an S3 bucket. You can simply create an empty bucket and then upload objects individually or in bulk to it either via the web console, CLI, CDK or SDKs. Alternatively, you can create the bucket and upload the assets in the same operation as we'll do here (yes, you can update them afterwards if you want).
 
-The example below creates an S3 bucket (`myWebAppBucket`) set up to serve a static web site. There are a number of parameters assigned to it that make this possible, including enabling public read access, setting the default index and error files and, for best practices, enforcing SSL.
+The example below creates an S3 bucket (`myWebAppBucket`) set up to serve a static web site. A number of parameters are assigned to it that make this possible, including enabling public read access, setting the default index and error files and, for best practices, enforcing SSL.
 
 We are also setting a CORS policy on the files in the bucket. This isn't technically necessary to view the site in this step, but, in future steps, we will be loading a JSON file from within the bucket using `fetch`, in which case this is needed.
 
@@ -174,13 +174,13 @@ npm install
 
 **Running Locally on LocalStack**
 
-Ensure that you have LocalStack started and running in another terminal window. The next step in the deployment is to bootstrap it, a process where the deployment is prepared.
+Ensure that you have LocalStack started and running in another terminal window. The next step in the deployment is to bootstrap it, a process that prepares the deployment.
 
 ```bash
-cdklocal boostrap
+cdklocal bootstrap
 ```
 
-Once this is complete, you can deploy it to your LocalStack instance running on Docker. You will be asked to confirm that you want to deploy the changes by entering "y".
+Once this is complete, you can deploy it to your LocalStack instance running on Docker. You will need to confirm that you want to deploy the changes by entering "y".
 
 ```bash
 cdklocal deploy
@@ -210,11 +210,11 @@ You should receive a similar output result containing the URL to view the static
 
 #### Finishing Up
 
-If all you need is a simple static web page running, congrats, you're done. Of course, you probably want to connect your domain name as well. There are a number of solutions to connect a domain to your statically hosted site on S3. If you want to stick entirely within the AWS ecosystem, you should check out [this guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/website-hosting-custom-domain-walkthrough.html) that uses Amazon's DNS service [Route 53](https://aws.amazon.com/route53/) and [Lambda@Edge](https://aws.amazon.com/lambda/edge/) for adding security headers at the edge. Both of these services are outside the full scope of this tutorial however.
+If all you need is a simple static web page running, congrats, you're done. Of course, you probably want to connect your domain name as well. There are many solutions to connect a domain to your statically hosted site on S3. If you want to stick entirely within the AWS ecosystem, you should check out [this guide](https://docs.aws.amazon.com/AmazonS3/latest/userguide/website-hosting-custom-domain-walkthrough.html) that uses Amazon's DNS service [Route 53](https://aws.amazon.com/route53/) and [Lambda@Edge](https://aws.amazon.com/lambda/edge/) for adding security headers at the edge. Both of these services are outside the full scope of this tutorial.
 
 ### CloudFront
 
-At this point, we've deployed some static web site assets to S3. However, they are deployed to a single specific region. This means that if I, for example, deployed my assets to `us-east-1`, every user globally trying to access those assets will need to connect to my resources in Northern Virginia. As you might imagine, this can cause painful latency in the responsiveness of my application.
+At this point, we've deployed some static web site assets to S3, but they are deployed to a single specific region. This means that if I, for example, deployed my assets to `us-east-1`, every user globally trying to access those assets will need to connect to my resources in Northern Virginia. As you might imagine, this can cause painful latency in the responsiveness of my application.
 
 This is why almost every modern deployment platform (ex. Netlify, Vercel, etc.) includes edge caching of static web assets. That's where CloudFront fits in. It is the CDN that provides the edge caching of your site's assets across over 600 nodes globally to ensure that every user is access data that is closest to their geographic location.
 
@@ -317,7 +317,7 @@ Congrats, you now have a globally cached static web site running on a combinatio
 > There are 2 hard problems in computer science: cache invalidation, naming things, and off-by-1 errors.
 > - Leon Bambrick
 
-Our CloudFront distribution uses the default caching policy, which is 24 hours. So, if you were to upload a different version of `main.js`, for example, into the S3 bucket, you would not see this change on your web site...well, not until tomorrow.
+Our CloudFront distribution uses the default caching policy, which is 24 hours. For example, if you were to upload a different version of `main.js` into the S3 bucket, you would not see this change on your web site...well, not until tomorrow.
 
 One, very simple way around this is to add version numbers that change for certain files. Another would be to add some kind of timestamp or version when I load `main.js` since the cache is based upon the whole path, including the query string.
 
@@ -342,7 +342,7 @@ Up to now, we've only deployed a static site, but, chances are, your application
 
 ### Lambda
 
-AWS Lambda is synonymous with serverless computing as it was the first serverless computing platform launched all the way back in 2014. You can use Lambdas to perform any type of compute you need to run, whether that's scheduled tasks, handling data processing, backend processes for a web application or even relatively long running tasks (their execution time limit can be set as high as 15 minutes). You can also use a range of languages to build Lambdas: Java, Go, PowerShell, Node. js, C#, Python, and Ruby.
+AWS Lambda is synonymous with serverless computing as it was the first serverless computing platform launched all the way back in 2014. You can use Lambdas to perform any type of compute you need to run, whether that's scheduled tasks, handling data processing, backend processes for a web application or even relatively long running tasks (their execution time limit can be set as high as 15 minutes). You can also use a range of languages to build Lambdas: Java, Go, PowerShell, Node.js, C#, Python, and Ruby.
 
 The broad benefit of Lambdas is twofold: you only pay for what you use; and Lambdas can scale up or down depending on that usage (meaning your server won't go down because of too many requests). But this means that you need to be aware that [Lambdas have a lifecycle](https://docs.aws.amazon.com/lambda/latest/operatorguide/execution-environments.html) as they spin up and spin down. When a Lambda is initially invoked, it has a cold start that can cause some latency in the initial response. After a period of inactivity, the Lambda will terminate, meaning that anything stored in memory is lost and the next call will incur the cold start penalty.
 
@@ -358,7 +358,7 @@ Lambda pricing can be a little complicated since it relies on a combination of t
 
 ### Adding a Lambda Function to Our Deployment
 
-Let's imagine we wanted to make a simple Lambda function that we can call from your web application to perform some kind of backend processing. For example, maybe it's just a simple email sign-up for for your newsletter.
+Let's imagine we wanted to make a simple Lambda function that we can call from your web application to perform some kind of backend processing. For example, maybe it's just a simple email sign-up for your newsletter.
 
 First, we need the function itself. Lambda functions invoke a handler when called. Here is a very generic handler that just returns a response body.
 
@@ -375,11 +375,11 @@ export const handler = async (event) => {
   return response;
 };
 ```
-However, our web application can't simply call a Lambda as it doesn't have a way of accessing it over HTTP. Thankfully, Lambdas allow for what's called a "function URL" that lets us to invoke the function handler over HTTP. The below CDK script snippet shows the changes to the prior script to add a Lambda function and function URL.
+Our web application can't simply call a Lambda as it doesn't have a way of accessing it over HTTP. Thankfully, Lambdas allow for what's called a "function URL" that lets us to invoke the function handler over HTTP. The below CDK script snippet shows the changes to the prior script to add a Lambda function and function URL.
 
 We create a function using the contents of the `lambda` directory, which currently just has an `index.mjs` file with the Lambda shown above. We'll choose a runtime (Node.js) and give the lambda a handler path. The `index.handler` path indicates that when the function is called it will invoke the `handler` function within `index.mjs`.
 
-Once the Lambda function is created, we add a function URL. In this case, we've chose to allow GET and POST requests from any origin and without any authorization (so, keep in mind that this is as public as a URL endpoint can get).
+Once we create the Lambda function, we add a function URL. In this case, we've chose to allow GET and POST requests from any origin and without any authorization (so, keep in mind that this is as public as a URL endpoint can get).
 
 We also want to provide a means of letting our static web site know the endpoint URL. In this case, we are outputting JSON data as part of the S3 bucket deployment into a `config.json` file. This file is included in addition to the assets from the `site_assets` folder.
 
@@ -476,15 +476,15 @@ API Gateway is a service purpose-built for managing, monitoring and securing eit
 
 #### Key Benefits for Frontend Devs
 
-What API Gateway does may not sound sexy but it is absolutely necessary when building a full web application. API Gateway let's you organize your application's backend in a way that makes sense, with descriptive endpoint names under your own domain. It can also be used to ensure that you have the proper security on your API endpoints, whether they are private or public (and to what degree).
+What API Gateway does may not sound sexy but it is absolutely necessary when building a full web application. API Gateway let's you organize your application's backend in a way that makes sense, with descriptive endpoint names under your own domain. It can also ensure that you have the proper security on your API endpoints, whether they are private or public (and to what degree).
 
 #### Pricing
 
 API Gateway does not have a permanent free tier but does offer a free 12 month free tier for new AWS customers that includes 1 million API calls received for REST APIs and HTTP APIs, and 1 million messages and 750,000 connection minutes for WebSocket APIs. If you aren't eligible for the free tier pricing, the costs for HTTP APIs, REST APIs and WebSockets APIs are charged by per million requests and the cost per million decrease as usage increases. 
 
-While we'll be building a REST API here, you can build a full backend using the HTTP API option, even connecting to Lambdas, but there are certain limitations. [This guide](https://www.netlify.com/blog/why-netlify-selected-astro-for-its-developer-hub-and-marketing-site/) is useful for determing which type of API you might need. Caching can also incur additional costs.
+While we'll be building a REST API here, you can build a full backend using the HTTP API option, even connecting to Lambdas, but there are certain limitations. [This guide](https://www.netlify.com/blog/why-netlify-selected-astro-for-its-developer-hub-and-marketing-site/) is useful for determining which type of API you might need. Caching can also incur additional costs.
 
-Full pricing details can be [found here](https://aws.amazon.com/api-gateway/pricing/).
+Full pricing details are [available here](https://aws.amazon.com/api-gateway/pricing/).
 
 #### Creating an API for Our Web Application
 
@@ -605,7 +605,7 @@ DynamoDB is a fully-managed serverless, NoSQL data store. It stores everything i
 
 #### Key Benefits for Frontend Devs
 
-NoSQL databases provide a fast and easy way to build the data backend of your site. DynamoDB offers many of the features of other key-value and document stores that make it easy to use for backend web application data and it obviously integrates nicely within the AWS ecosystem. It's worth pointing out that other solutions like MongoDB have support for additional data types and querying capabilities out-of-the-box, but DynamoDB is known for its performance and also comes with replication across availability zones within a region by default.
+NoSQL databases provide a fast and easy way to build the data backend of your site. DynamoDB offers many of the features of other key-value and document stores that make it easy to use for backend web application data and it integrates nicely within the AWS ecosystem. It's worth pointing out that other solutions like MongoDB have support for additional data types and querying capabilities out-of-the-box, but DynamoDB is known for its performance and also comes with replication across availability zones within a region by default.
 
 #### Pricing
 
