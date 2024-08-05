@@ -1,4 +1,4 @@
-# Some Clever Title About Ephemeral Instances
+# Local Testing in the Cloud with Ephemeral Instances
 
 It's been said that there is a fine line between genius and insanity. Anyone who understands the scale and scope AWS services could have been forgiven for thinking that the idea of a local emulator for AWS rested more on the insanity side of that line. And yet, LocalStack exists.
 
@@ -6,7 +6,7 @@ This feat of engineering is apparently not enough for our team however. "What if
 
 ![I'm glad we're right back where we started](back-where-we-started.gif)
 
-Well, we released a new feature called [ephemeral instances](https://docs.localstack.cloud/user-guide/cloud-sandbox/ephemeral-instance/) that does just that. Stick with me though, because this can be incredibly useful for things like:
+Well, we released a preview of a new feature called [ephemeral instances](https://docs.localstack.cloud/user-guide/cloud-sandbox/ephemeral-instance/) that does just that. Stick with me though, because this can be incredibly useful for things like:
 
 * **Collaboration** – LocalStack already made iteration and testing easy, but the only direct way to share the state of your work previously was to deploy it to AWS. This can require spinning up (and then removing) a bunch of services. Ephemeral instances make it easy to share a fully-functional, running instance of your code via just a link, while also making cleanup trivial.
 * **Previews** – You can integrate ephemeral instances into your continuous integration (CI) processes to enable running application previews of any and every commit. 
@@ -15,6 +15,8 @@ Well, we released a new feature called [ephemeral instances](https://docs.locals
 * **Docker is unavailable** – There are situations where you may need to run and test your work using LocalStack, but are unable to use Docker, and ephemeral instances will enable you to do that.
 
 Let's look at how this works.
+
+_Note: Ephemeral instances are in an early public preview. We'd love for you to try them out and give us your feedback, but, as this is an early preview release, you can expect some rough edges._
 
 ## Create an Ephemeral Instance with the Web App
 
@@ -52,10 +54,78 @@ Returning to the web app, you should see your object stored in your bucket.
 
 Once you have all your services and state set, you can click the "State" tab for your instance and save the state locally or to a Cloud Pod.
 
+Creating all the services in your ephemeral instance manually probably isn't the ideal way to work, in part because you are consuming minutes as you do so and, depending on how long you chose for your instance to live, there's also a chance it shuts down before you are done. Instead, it is better to use your local version of LocalStack running on Docker and then use one of the options LocalStack provides for [state management](https://docs.localstack.cloud/user-guide/state-management/) to save the state and load your state into a new ephemeral instance. Let's see how to do that using Cloud Pods.
+
 ## Create an Ephemeral Instance from a Cloud Pod
 
-foo
+The easiest and most efficient way to create an ephemeral instance is via a [Cloud Pod](https://docs.localstack.cloud/user-guide/state-management/cloud-pods/). Cloud Pods are essentially a snapshot of the state of a running LocalStack instance that can be stored, versioned, shared, and restored. This means that, rather than creating a new empty ephemeral instance, you can create the ephemeral instance with the services or data already deployed.
+
+Let's see how this works. I have an example application I've built using a combination of S3, CloudFront, Lambda, API Gateway and DynamoDB running locally via LocalStack. The message being displayed at the bottom of the page is from data pre-loaded into DynamoDB.
+
+![The running sample app](sample-app.png)
+
+Once the application is running locally, the next step is to save the state into a Cloud Pod. In the command below, I am saving this to a new Cloud Pod that I am naming `brian-ephemeral-instance`.
+
+```bash
+localstack pod save brian-ephemeral-instance
+```
+
+Back in the LocalStack web app, I have a number of options for loading this instance into an ephemeral instance. For example, I can go directly to the Cloud Pods item on the left-hand navigation, click into the detail page for my `brian-ephemeral-instance` pod and simply click on the "Browse Version" button to create a new instance using the currently selected version of the Cloud Pod that will live for 30 minutes.
+
+![Creating an ephemeral instance from a cloud pod](cloud-pods.png)
+
+One thing to keep in mind is that ephemeral instances run the latest version of LocalStack, so you may run into issues loading Cloud Pods generated against prior versions.
+
+Another option for populating an ephemeral instance is to use the "Load Into Instance" drop down to load the Cloud Pod into an already running instance. Or, lastly, I can go to the "Epheral Instances" and then create a new instance, choosing your Cloud Pod from the drop down when configuring the instance settings.
 
 ## Add an Application Preview after Commits
 
-bar
+Launching ephemeral instances from your Cloud Pods via the web app is an easy way to preview and share a running version of your application. But what if we could automatically create an ephemeral instance to preview our application after each commit? As I'm sure you guessed...you can!
+
+The [Setup LocalStack GitHub Action](https://github.com/localstack/setup-localstack) offers an easy way to integrate starting and stopping a LocalStack ephemeral instance into your workflow to enable things like PR previews. Let's walk through an example.
+
+The workflow below starts by checking the code that we want to deploy out of the repository. Next it uses the Setup LocalStack GitHub Action to start an ephemeral instance. I will need a legacy [LocalStack API key](https://app.localstack.cloud/workspace/api-keys) in order for this to work (note that you may need your administrator's permission to create one of these keys). The GitHub Token will be automatically generated.
+
+The key element to understand is the `preview-cmd`, which runs all the steps that are required to build and deploy your application. As you can see below, this application needs the CDK as well as some npm dependencies installed before it can deploy the code to the ephemeral instance. 
+
+```yaml
+name: 'Create Preview on PR'
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  localstack:
+    name: Setup LocalStack Preview
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: LocalStack Preview
+        uses: LocalStack/setup-localstack@v0.2.2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          state-backend: ephemeral
+          state-action: start
+          include-preview: 'true'
+          install-awslocal: 'true'
+          preview-cmd: |
+            npm install -g aws-cdk-local aws-cdk;
+            npm install;
+            cdklocal bootstrap;
+            cdklocal deploy --require-approval never;
+            echo LS_PREVIEW_URL=$AWS_ENDPOINT_URL/cloudfront/$distributionId/ >> $GITHUB_ENV;
+        env:
+          LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+```
+
+This workflow is set to run on any PR and will add a comment to the PR with the preview running on a LocalStack instance automatically.
+
+SCREEN SHOT
+
+It's important to note that the steps in the `preview-cmd` are run _after_ the ephemeral instance is created. Therefore, the ephemeral instance exists even if the steps fail. You can always go to the list of running [ephemeral instances](https://app.localstack.cloud/instances/ephemeral) in the LocalStack web app to shut down a running instance. Another option is to use the Setup LocalStack GitHub Action to remove the ephemeral instance if the preview deploy fails. For details on how to do that, [check the documentation](https://docs.localstack.cloud/user-guide/cloud-sandbox/application-previews/).
+
+## Give Ephemeral Instances a Try!
+
+As you can see, the idea of running a local emulator of a cloud environment on the cloud isn't crazy at all. In fact, it enables all sorts of useful capabilities including quick and painless environments for acceptance testing and collaboration and automatic application previews.
+
+But this is just the beginning. Ephemeral instances are only in the early public preview stage and we have a lot of ideas for how to take this feature even further, but we'd also love to hear from you. Give them a try and let us know what you think and share any ideas you may have for how we might make them even more valuable for you. You can always share feedback via our [community Slack]([localstack.cloud/slack](https://localstack.cloud/slack)).
