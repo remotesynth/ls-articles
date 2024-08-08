@@ -60,7 +60,7 @@ Creating all the services in your ephemeral instance manually probably isn't the
 
 The easiest and most efficient way to create an ephemeral instance is via a [Cloud Pod](https://docs.localstack.cloud/user-guide/state-management/cloud-pods/). Cloud Pods are essentially a snapshot of the state of a running LocalStack instance that can be stored, versioned, shared, and restored. This means that, rather than creating a new empty ephemeral instance, you can create the ephemeral instance with the services or data already deployed.
 
-Let's see how this works. I have an example application I've built using a combination of S3, CloudFront, Lambda, API Gateway and DynamoDB running locally via LocalStack. The message being displayed at the bottom of the page is from data pre-loaded into DynamoDB.
+Let's see how this works. I have an example application I've built using a combination of S3, CloudFront, Lambda, API Gateway and DynamoDB running locally via LocalStack. The message displayed at the bottom of the page is from data pre-loaded into DynamoDB.
 
 ![The running sample app](sample-app.png)
 
@@ -70,13 +70,13 @@ Once the application is running locally, the next step is to save the state into
 localstack pod save brian-ephemeral-instance
 ```
 
-Back in the LocalStack web app, I have a number of options for loading this instance into an ephemeral instance. For example, I can go directly to the Cloud Pods item on the left-hand navigation, click into the detail page for my `brian-ephemeral-instance` pod and simply click on the "Browse Version" button to create a new instance using the currently selected version of the Cloud Pod that will live for 30 minutes.
+Back in the LocalStack web app, I have several options for loading this instance into an ephemeral instance. For example, I can go directly to the Cloud Pods item on the left-hand navigation, click into the detail page for my `brian-ephemeral-instance` pod and simply click on the "Browse Version" button to create a new instance using the currently selected version of the Cloud Pod that will live for 30 minutes.
 
 ![Creating an ephemeral instance from a cloud pod](cloud-pods.png)
 
 One thing to keep in mind is that ephemeral instances run the latest version of LocalStack, so you may run into issues loading Cloud Pods generated against prior versions.
 
-Another option for populating an ephemeral instance is to use the "Load Into Instance" drop down to load the Cloud Pod into an already running instance. Or, lastly, I can go to the "Epheral Instances" and then create a new instance, choosing your Cloud Pod from the drop down when configuring the instance settings.
+Another option for populating an ephemeral instance is to use the "Load Into Instance" drop down to load the Cloud Pod into an already running instance. Or, lastly, I can go to the "Ephemeral Instances" and then create a new instance, choosing your Cloud Pod from the drop down when configuring the instance settings.
 
 ## Add an Application Preview after Commits
 
@@ -95,6 +95,7 @@ on:
     types: [opened, synchronize, reopened]
 jobs:
   localstack:
+    permissions: write-all
     name: Setup LocalStack Preview
     runs-on: ubuntu-latest
     steps:
@@ -111,8 +112,9 @@ jobs:
           preview-cmd: |
             npm install -g aws-cdk-local aws-cdk;
             npm install;
-            cdklocal bootstrap;
-            cdklocal deploy --require-approval never;
+            cdklocal bootstrap --context localenv=ephemeral;
+            cdklocal deploy --context localenv=ephemeral --require-approval never;
+            distributionId=$(awslocal cloudfront list-distributions | jq -r '.DistributionList.Items[0].Id');
             echo LS_PREVIEW_URL=$AWS_ENDPOINT_URL/cloudfront/$distributionId/ >> $GITHUB_ENV;
         env:
           LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
