@@ -8,7 +8,7 @@ Whether you choose to continue using these tools (don't get me wrong, I'm a big 
 
 ### The Example Application
 
-Before we get started, let's talk about the examples in this tutorial. The full example repository is available [on GitHub](https://github.com/remotesynth/aws-for-frontend-devs).
+Before we get started, let's talk about the examples in this tutorial. The full example repository is available [on GitHub](https://github.com/localstack-samples/aws-for-frontend-devs).
 
 Each step in this tutorial series builds upon the previous. While the application we will deploy is intentionally simple, ultimately we start from a simple static site and end up with a page that calls a backend API that returns data from a data store.
 
@@ -165,7 +165,7 @@ export class S3Stack extends cdk.Stack {
 
 #### Run the Example
 
-The S3 example is in the `s3` folder of the [example project](https://github.com/remotesynth/aws-for-frontend-devs/tree/master/s3). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
+The S3 example is in the `s3` folder of the [example project](https://github.com/localstack-samples/aws-for-frontend-devs/tree/master/s3). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
 
 ```bash
 cd s3
@@ -272,7 +272,7 @@ new cdk.CfnOutput(this, 'CloudFrontDistributionURL', {
 
 #### Run the Example
 
-The CloudFormation example is in the `cf-s3` folder of the [example project](https://github.com/remotesynth/aws-for-frontend-devs/tree/master/cf-s3). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
+The CloudFormation example is in the `cf-s3` folder of the [example project](https://github.com/localstack-samples/aws-for-frontend-devs/tree/master/cf-s3). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
 
 ```bash
 cd cf-s3
@@ -415,7 +415,7 @@ new cdk.CfnOutput(this, 'LambdaFunctionURL', {
 
 #### Run the Example
 
-The CloudFormation example is in the `lambda` folder of the [example project](https://github.com/remotesynth/aws-for-frontend-devs/tree/master/lambda). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
+The CloudFormation example is in the `lambda` folder of the [example project](https://github.com/localstack-samples/aws-for-frontend-devs/tree/master/lambda). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
 
 ```bash
 cd lambda
@@ -543,7 +543,7 @@ While we could have connected our API Gateway to our CloudFront distribution to 
 
 #### Run the Example
 
-The CloudFormation example is in the `api-gateway` folder of the [example project](https://github.com/remotesynth/aws-for-frontend-devs/tree/master/api-gateway). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
+The CloudFormation example is in the `api-gateway` folder of the [example project](https://github.com/localstack-samples/aws-for-frontend-devs/tree/master/api-gateway). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
 
 ```bash
 cd api-gateway
@@ -709,7 +709,7 @@ table.grantReadData(lambdaFunction);
 
 #### Run the Example
 
-The CloudFormation example is in the `dynamodb` folder of the [example project](https://github.com/remotesynth/aws-for-frontend-devs/tree/master/dynamodb). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
+The CloudFormation example is in the `dynamodb` folder of the [example project](https://github.com/localstack-samples/aws-for-frontend-devs/tree/master/dynamodb). To run this locally on LocalStack or remotely on AWS you'll first need to change into the proper directory and install the dependencies.
 
 ```bash
 cd dynamodb
