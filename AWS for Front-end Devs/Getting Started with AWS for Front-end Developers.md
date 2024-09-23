@@ -26,7 +26,7 @@ Multiple options exist for creating services in AWS:
 
 * You can use the AWS console and step through the configuration. This is often a good way to get comfortable with a service and it's options.
 * You can use [CloudFormation](https://aws.amazon.com/cloudformation/), which is a YAML-based infrastructure-as-code tool for provisioning AWS resources. I find that it can be quite tricky to get right (and I've struggled with it myself in the past), but AI tools like Amazon Q or GitHub Copilot actually do a pretty great job of generating this for you nowadays.
-* The [AWS CDK (Cloud Development Kit)](https://aws.amazon.com/cdk/) let's you build out your infrastructure programmatically in code using languages like TypeScript, JavaScript, Python, Java, C# and Go. It has a bit of a learning curve, but can really feel the most comfortable of the three options in my view, since you are using a language you are already comfortable with.
+* The [AWS CDK (Cloud Development Kit)](https://aws.amazon.com/cdk/) let's you build out your infrastructure programmatically in code using languages like TypeScript, JavaScript, Python, Java, C# and Go. It has a bit of a learning curve, but feels the most comfortable of the three options in my personal opinion, since you are using a language you are already familiar with.
 
 All of the deployments in this tutorial use the CDK. It's worth understanding that, ultimately, the CDK generates a CloudFormation template for you. This means that the deployment details in your AWS dashboard are still located under CloudFormation.
 
@@ -56,7 +56,7 @@ I know. I know. It's always more fun to just start building. But before we can r
 
 ### Understanding AWS Infrastructure
 
-If you're like me, as a frontend developer, infrastructure is not your jam. I prefer to know as little as I possibly can. That being said, it's worth understanding some broad concepts when it comes to AWS because it can impact your decisions on how to deploy your services.
+If you're like me, as a frontend developer, infrastructure is not your jam. That being said, it's worth understanding some broad concepts when it comes to AWS because it can impact your decisions on how to deploy your services.
 
 AWS [global infrastructure](https://aws.amazon.com/about-aws/global-infrastructure/) is made up of _regions_ (there are currently 33 of these as shown in the image below). These are essentially geographic areas that contain data centers where your services run. When you deploy a service, you'll choose to push it to one or more regions. For example, I often deploy services to `us-east-1` which is in Northern Virginia. In most cases, a single region will suffice (if you need multi-region, you probably aren't reading this article as you have a team that manages your AWS cloud infrastructure).
 
@@ -64,7 +64,7 @@ AWS [global infrastructure](https://aws.amazon.com/about-aws/global-infrastructu
 
 Each of these regions have 3 or more _availability zones_ (AZ). These are separate data centers within the region that make the zones resilient. If, for example, one AZ goes down, another can take over and since, in most cases,  your services replicate across the AZs. This means that your services will continue to function even in the case of a significant incident that impacts a single data center. That doesn't mean that AWS doesn't have outages, but they are very rare.
 
-You will choose a region whenever you are deploying services. In most cases, you'll want to deploy all the various AWS services that make up your web application to the same region. You do not need to choose availability zones, though a few services may allow you to choose a cheaper option that isn't replicated access AZs for data that isn't critical. In all the cases within this guide, we'll be using the standard version of each service.
+You will choose a region whenever you are deploying services. Typically, you'll want to deploy all the various AWS services that make up your web application to the same region. You do not need to choose availability zones, though a few services may allow you to choose a cheaper option that isn't replicated across AZs for data that isn't critical. In all the cases within this guide, we'll be using the standard version of each service.
 
 ### AWS Security Basics
 
@@ -228,7 +228,7 @@ There is a permanent free level for CloudFront that is largely based upon the nu
 
 #### Creating an CloudFront Distribution for Our Web Site
 
-Let's update the prior example to add a CloudFront distribution in front of our static web site on S3. The CDK code below shows the sections that have changed from the prior script. We have modified the S3bucket to set the  access to private rather than public, since the traffic will be routed via CloudFront. We no longer need the bucket to be public, just CloudFront to have access to it. You'll see we are creating the appropriate permissions in the `oai` variable and then passing those in to CloudFront under `originAccessIdentity` for the S3 Bucket.
+Let's update the prior example to add a CloudFront distribution in front of our static web site on S3. The CDK code below shows the sections that have changed from the prior script. We have modified the S3 bucket to set the  access to private rather than public, since the traffic will be routed via CloudFront. We no longer need the bucket to be public, just CloudFront to have access to it. You'll see that we are creating the appropriate permissions in the `oai` variable and then passing those in to CloudFront under `originAccessIdentity` for the S3 Bucket.
 
 
 ```javascript
@@ -319,7 +319,7 @@ Congrats, you now have a globally cached static web site running on a combinatio
 
 Our CloudFront distribution uses the default caching policy, which is 24 hours. For example, if you were to upload a different version of `main.js` into the S3 bucket, you would not see this change on your web site...well, not until tomorrow.
 
-One, very simple way around this is to add version numbers that change for certain files. Another would be to add some kind of timestamp or version when I load `main.js` since the cache is based upon the whole path, including the query string.
+One, very simple way around this is to add version numbers that change for certain files. Another would be to add some kind of timestamp or version when loading `main.js`, since the cache is based upon the whole path, including the query string.
 
 You could also manually invalidate a file or groups of files. For example, I could run this command to invalidate the `main.js` file cache for my distribution (note that you'll need to change the distribution ID to the ID of your deployed CloudFront distribution):
 
@@ -350,11 +350,11 @@ The broad benefit of Lambdas is twofold: you only pay for what you use; and Lamb
 
 Lambdas are the basis for the backend of many modern web applications. Rather than run on a monolithic web application server (ex. PHP, Ruby), many web applications use a microservices architecture that rely on a number of Lambdas to perform the backend processing necessary for the web site to function.
 
-In fact, many full-stack frameworks like Next.js, for example, rely on serverless functions (in many cases AWS Lambda) to perform everything from backend processing to server-side rendering. Even if you ultimately end up relying on a full-stack framework to deploy all your backend to Lambdas for you, it's good to understand how they function.
+In fact, many full-stack frameworks like Next.js, for example, when deployed to platforms like Vercel or Netlify typically rely on serverless functions (in many cases AWS Lambda) to perform everything from backend processing to server-side rendering. Even if you ultimately end up relying on a full-stack framework to deploy all your backend to Lambdas for you, it's good to understand how they function.
 
 ### Pricing
 
-Lambda pricing can be a little complicated since it relies on a combination of the number of requests, the amount of memory you consume and the amount of time it takes to process these request. However, Lambda does have an always free tier that allows 1 million free requests per month or up to 400,000 GB-seconds (i.e. memory usage) or 3.2 million seconds of compute time per month. You can find [full pricing details here](https://aws.amazon.com/lambda/pricing/).
+Lambda pricing can be a little complicated since it depends on a combination of the number of requests, the amount of memory you consume and the amount of time it takes to process these request. However, Lambda does have an always free tier that allows 1 million free requests per month or up to 400,000 GB-seconds (i.e. memory usage) or 3.2 million seconds of compute time per month. You can find [full pricing details here](https://aws.amazon.com/lambda/pricing/).
 
 ### Adding a Lambda Function to Our Deployment
 
@@ -377,7 +377,7 @@ export const handler = async (event) => {
 ```
 Our web application can't simply call a Lambda as it doesn't have a way of accessing it over HTTP. Thankfully, Lambdas allow for what's called a "function URL" that lets us to invoke the function handler over HTTP. The below CDK script snippet shows the changes to the prior script to add a Lambda function and function URL.
 
-We create a function using the contents of the `lambda` directory, which currently just has an `index.mjs` file with the Lambda shown above. We'll choose a runtime (Node.js) and give the lambda a handler path. The `index.handler` path indicates that when the function is called it will invoke the `handler` function within `index.mjs`.
+We create a function using the contents of the `lambda` directory, which currently just has an `index.mjs` file with the Lambda shown above. We'll choose a runtime (Node.js) and give the Lambda a handler path. The `index.handler` path indicates that when the function is called it will invoke the `handler` function within `index.mjs`.
 
 Once we create the Lambda function, we add a function URL. In this case, we've chose to allow GET and POST requests from any origin and without any authorization (so, keep in mind that this is as public as a URL endpoint can get).
 
@@ -492,9 +492,9 @@ Before adding an API Gateway in front of our Lambda, we'll start by removing the
 
 We'll start by defining the API Gateway itself targeting the Lambda function we defined earlier. Since we are just using a single Lambda function, we could have used the `LambdaRestApi()` method to create a proxy integration connecting the API Gateway instance with the single Lambda. Instead we are using the standard `RestApi()` method and adding the integration directly via the `LambdaIntegration()` method below. We chose this because it would allow us to run different API Gateway endpoints through other, separate Lambda functions rather than route them all through a single function.
 
-We have also explicitly listed the CORS options, though these are also the defaults. Finally, we add the endpoint (we're using `/hello` since this is a "hello world" function) and allow the GET method, connecting it to the specific Lambda integration we created. I know, it all sounds way more complicated than it really is.
+We have also explicitly listed the CORS options for clarity, though these are also the defaults. Finally, we add the endpoint (we're using `/hello` since this is a "hello world" function) and allow the GET method, connecting it to the specific Lambda integration we created. I know, it all sounds way more complicated than it really is.
 
-One last bit of complication though... I will admit that I am not a CORS expert, but, even though we have set up the CORS settings on the API Gateway itself, we need to pass the CORS headers back from the Lambda response as API Gateway expects a proxy response in a specific format.
+One last bit of complication though... I will admit that I am not a CORS expert, but, even though we have set up the CORS settings on the API Gateway itself, we need to pass the CORS headers back from the Lambda response as API Gateway expects a proxy response in a specific format. Here is the updated Lambda:
 
 ```javascript
 export const handler = async (event) => {
@@ -595,7 +595,7 @@ You should receive a similar output result containing the URL to access the Lamb
 
 #### Finishing Up
 
-We've now got all the building blocks we need for building a full backend API for a full web application, assuming our backend is getting data from third-party APIs. But most applications need some sort of data, so, for our final piece, let's explore how to add that.
+We've now got all the building blocks we need for building a full backend API for a full web application, assuming our backend is getting data from third-party APIs. But most applications need a way to store some sort of data, so, for our final piece, let's explore how to add that.
 
 ### DynamoDB
 
@@ -609,7 +609,7 @@ NoSQL databases provide a fast and easy way to build the data backend of your si
 
 #### Pricing
 
-As with pretty much everything we've explored so far, DynamoDB pricing depends on a number of factors. First of all, you can choose to pay on-demand, which will adjust pricing based upon the number of reads and writes, the amount of data you store, the kind of backup you set up and the amount of data transfer out you use (among [other criteria](https://aws.amazon.com/dynamodb/pricing/on-demand/)..phew!).
+As with pretty much everything we've explored so far, DynamoDB pricing depends on a number of factors. First of all, you can choose to pay on-demand, which will adjust pricing based upon the number of reads and writes, the amount of data you store, the kind of backup you set up and the amount of data transfer out you use (among [other criteria](https://aws.amazon.com/dynamodb/pricing/on-demand/)...phew!).
 
 You can alternatively choose to provision specific capacity, which can help with more predictability if you know how much usage your application will require.
 
